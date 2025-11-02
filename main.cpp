@@ -1,60 +1,49 @@
 //=====[Libraries]=============================================================
 
-#include "mbed.h"
-#include "arm_book_lib.h"
+
 
 //=====[Defines]===============================================================
 
-#define NUMBER_OF_KEYS 4
+
 
 //=====[Declaration and initialization of public global objects]===============
 
 DigitalIn enterButton(BUTTON1);
-DigitalIn gasDetector(D2);
-DigitalIn overTempDetector(D3);
-DigitalIn aButton(D4);
-DigitalIn bButton(D5);
-DigitalIn cButton(D6);
-DigitalIn dButton(D7);
+
 
 DigitalOut alarmLed(LED1);
-DigitalOut incorrectCodeLed(LED3);
-DigitalOut systemBlockedLed(LED2);
+
 
 UnbufferedSerial uartUsb(USBTX, USBRX, 115200);
 
 //=====[Declaration and initialization of public global variables]=============
 
 bool alarmState    = OFF;
-bool incorrectCode = false;
+
 
 int numberOfIncorrectCodes = 0;
-int buttonBeingCompared    = 0;
+
 int codeSequence[NUMBER_OF_KEYS]   = { 1, 1, 0, 0 };
-int buttonsPressed[NUMBER_OF_KEYS] = { 0, 0, 0, 0 };
+
 
 //=====[Declarations (prototypes) of public functions]=========================
 
 void inputsInit();
-void outputsInit();
+
 
 void alarmActivationUpdate();
-void alarmDeactivationUpdate();
+
 
 void uartTask();
-void availableCommands();
-bool areEqual();
+
 
 //=====[Main function, the program entry point after power on or reset]========
 
 int main()
 {
-    inputsInit();
-    outputsInit();
+ 
     while (true) {
-        alarmActivationUpdate();
-        alarmDeactivationUpdate();
-        uartTask();
+      
     }
 }
 
@@ -63,26 +52,22 @@ int main()
 void inputsInit()
 {
     gasDetector.mode(PullDown);
-    overTempDetector.mode(PullDown);
+    
     aButton.mode(PullDown);
-    bButton.mode(PullDown);
-    cButton.mode(PullDown);
-    dButton.mode(PullDown);
+
 }
 
 void outputsInit()
 {
     alarmLed = OFF;
-    incorrectCodeLed = OFF;
-    systemBlockedLed = OFF;
+  
 }
 
 void alarmActivationUpdate()
 {
     if ( gasDetector || overTempDetector ) {
-        alarmState = ON;
+       
     }
-    alarmLed = alarmState;
 }
 
 void alarmDeactivationUpdate()
@@ -93,15 +78,12 @@ void alarmDeactivationUpdate()
         }
         if ( enterButton && !incorrectCodeLed && alarmState ) {
             buttonsPressed[0] = aButton;
-            buttonsPressed[1] = bButton;
-            buttonsPressed[2] = cButton;
-            buttonsPressed[3] = dButton;
+
+            
             if ( areEqual() ) {
-                alarmState = OFF;
-                numberOfIncorrectCodes = 0;
+            
             } else {
-                incorrectCodeLed = ON;
-                numberOfIncorrectCodes++;
+               
             }
         }
     } else {
@@ -225,9 +207,7 @@ void availableCommands()
     uartUsb.write( "Available commands:\r\n", 21 );
     uartUsb.write( "Press '1' to get the alarm state\r\n", 34 );
     uartUsb.write( "Press '2' to get the gas detector state\r\n", 41 );
-    uartUsb.write( "Press '3' to get the over temperature detector state\r\n", 54 );
-    uartUsb.write( "Press '4' to enter the code sequence\r\n", 38 );
-    uartUsb.write( "Press '5' to enter a new code\r\n\r\n", 33 );
+   
 }
 
 bool areEqual()
